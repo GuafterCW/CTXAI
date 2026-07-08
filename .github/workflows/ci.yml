@@ -38,24 +38,83 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
-  # PRs: build-only smoke test. Pushes to master: publish to GHCR as
-  # ghcr.io/<repo>:master (+ sha tag). Release versions are tagged by the
-  # Release workflow.
+  # Images are built natively per arch (QEMU emulation makes the Next.js
+  # build crash with SIGILL). PRs: build-only smoke test. Pushes to master:
+  # push per-arch digests, then merge them into ghcr.io/<repo>:master (+ sha).
+  # Release versions are tagged by the Release workflow.
   docker:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
     permissions:
       contents: read
       packages: write
     steps:
       - uses: actions/checkout@v7
 
-      - uses: docker/setup-qemu-action@v4
-        if: github.event_name == 'push'
-
       - uses: docker/setup-buildx-action@v4
 
       - uses: docker/login-action@v4
         if: github.event_name == 'push'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Image name (lowercase) and platform slug
+        id: vars
+        run: |
+          echo "image=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+          platform="${{ matrix.platform }}"
+          echo "slug=${platform//\//-}" >> "$GITHUB_OUTPUT"
+
+      - name: Build (push by digest on master)
+        id: build
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: ${{ matrix.platform }}
+          cache-from: type=gha,scope=${{ steps.vars.outputs.slug }}
+          cache-to: type=gha,mode=max,scope=${{ steps.vars.outputs.slug }}
+          outputs: type=image,name=${{ steps.vars.outputs.image }},push-by-digest=true,name-canonical=true,push=${{ github.event_name == 'push' }}
+
+      - name: Export digest
+        if: github.event_name == 'push'
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - uses: actions/upload-artifact@v7
+        if: github.event_name == 'push'
+        with:
+          name: digests-${{ steps.vars.outputs.slug }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  docker-merge:
+    if: github.event_name == 'push'
+    needs: docker
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: /tmp/digests
+          pattern: digests-*
+          merge-multiple: true
+
+      - uses: docker/setup-buildx-action@v4
+
+      - uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -69,13 +128,10 @@ jobs:
             type=ref,event=branch
             type=sha
 
-      - name: Build image (and push on master)
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          platforms: ${{ github.event_name == 'push' && 'linux/amd64,linux/arm64' || 'linux/amd64' }}
-          push: ${{ github.event_name == 'push' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      - name: Merge digests into a multi-arch manifest
+        working-directory: /tmp/digests
+        run: |
+          image="ghcr.io/${GITHUB_REPOSITORY,,}"
+          docker buildx imagetools create \
+            $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            $(printf "$image@sha256:%s " *)
