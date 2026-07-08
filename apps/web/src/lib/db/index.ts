@@ -10,13 +10,20 @@ mkdirSync(path.dirname(dbPath), { recursive: true });
 
 const sqlite = new Database(dbPath);
 sqlite.pragma("journal_mode = WAL");
+sqlite.pragma("busy_timeout = 5000");
 sqlite.pragma("foreign_keys = ON");
 
 export const db = drizzle(sqlite, { schema });
 
 // Apply pending migrations on boot so self-hosters never run a manual step.
+// Skipped during `next build`: page-data collection imports route modules in
+// parallel worker processes, and concurrent migrations race on a fresh DB
+// ("table already exists"). At runtime there is exactly one server process.
 const migrationsFolder = path.join(process.cwd(), "drizzle");
-if (existsSync(migrationsFolder)) {
+if (
+  process.env.NEXT_PHASE !== "phase-production-build" &&
+  existsSync(migrationsFolder)
+) {
   migrate(db, { migrationsFolder });
 }
 
