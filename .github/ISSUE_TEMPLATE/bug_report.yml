@@ -1,0 +1,42 @@
+name: Bug report
+description: Something is broken
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: Include the exact error message if there is one (job cards show it; server logs often have more).
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to /create
+        2. Generate an image with …
+        3. …
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Studio / generation UI
+        - Provider adapter (Kling / Seedream / ElevenLabs / demo)
+        - Montage / rendering
+        - MCP (HTTP or stdio)
+        - Auth / settings / API keys
+        - Docker / self-hosting
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: "e.g. macOS 15 arm64, Node 22, pnpm dev — or Docker image"
+    validations:
+      required: true

@@ -1,0 +1,43 @@
+name: Provider request
+description: Request (or offer to build) a new provider adapter
+labels: [provider, enhancement]
+body:
+  - type: input
+    id: provider
+    attributes:
+      label: Provider
+      placeholder: "e.g. Runway, Luma, Flux via fal.ai"
+    validations:
+      required: true
+  - type: input
+    id: docs
+    attributes:
+      label: API documentation URL
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Media kind(s)
+      multiple: true
+      options:
+        - video
+        - image
+        - audio
+    validations:
+      required: true
+  - type: dropdown
+    id: api-style
+    attributes:
+      label: API style
+      description: Does the API return results synchronously or via a job you poll?
+      options:
+        - Poll-based (submit job, poll status)
+        - Synchronous (result in the response)
+        - Not sure
+  - type: checkboxes
+    id: implementing
+    attributes:
+      label: Contribution
+      options:
+        - label: I want to implement this adapter myself (see CONTRIBUTING.md)

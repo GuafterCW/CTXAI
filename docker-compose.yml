@@ -1,0 +1,20 @@
+services:
+  ctxai:
+    # Prebuilt image from GHCR; compose builds locally when it isn't
+    # available (e.g. before the first release).
+    image: ghcr.io/guaftercw/ctxai:latest
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      # Generate: openssl rand -base64 32
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?set BETTER_AUTH_SECRET in .env}
+      # Generate: openssl rand -hex 32
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?set ENCRYPTION_KEY in .env}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
+    volumes:
+      - ctxai-data:/data
+    restart: unless-stopped
+
+volumes:
+  ctxai-data:

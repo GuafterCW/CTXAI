@@ -1,0 +1,28 @@
+{
+  "name": "@ctxai/mcp",
+  "version": "0.1.0",
+  "description": "stdio MCP proxy for a CTXAI instance — connect Claude Desktop or any stdio-only MCP client to your self-hosted CTXAI server.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GuafterCW/CTXAI.git",
+    "directory": "packages/mcp-stdio"
+  },
+  "homepage": "https://github.com/GuafterCW/CTXAI#readme",
+  "bugs": "https://github.com/GuafterCW/CTXAI/issues",
+  "type": "module",
+  "bin": {
+    "ctxai-mcp": "./index.js"
+  },
+  "files": ["index.js", "README.md"],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "node test.mjs"
+  },
+  "keywords": ["mcp", "modelcontextprotocol", "ai", "video-generation", "ctxai"]
+}

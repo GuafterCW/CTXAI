@@ -1,0 +1,28 @@
+{
+  "name": "@ctxai/cli",
+  "version": "0.1.0",
+  "description": "Command-line client for a CTXAI instance — generate images, video and audio, and render montages from your terminal.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GuafterCW/CTXAI.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/GuafterCW/CTXAI#readme",
+  "bugs": "https://github.com/GuafterCW/CTXAI/issues",
+  "type": "module",
+  "bin": {
+    "ctxai": "./index.js"
+  },
+  "files": ["index.js", "README.md"],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "node test.mjs"
+  },
+  "keywords": ["cli", "ai", "video-generation", "image-generation", "ctxai"]
+}
