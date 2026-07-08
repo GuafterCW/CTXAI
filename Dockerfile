@@ -1,5 +1,5 @@
 # ---- build stage ----------------------------------------------------------
-FROM node:22-alpine AS builder
+FROM node:24-alpine AS builder
 RUN corepack enable && apk add --no-cache python3 make g++
 WORKDIR /app
 
@@ -18,7 +18,7 @@ RUN BETTER_AUTH_SECRET=build-only-dummy-not-a-secret \
     pnpm --filter @ctxai/web build
 
 # ---- runtime stage --------------------------------------------------------
-FROM node:22-alpine AS runner
+FROM node:24-alpine AS runner
 RUN apk add --no-cache ffmpeg && mkdir -p /data && chown node:node /data
 
 ENV NODE_ENV=production \

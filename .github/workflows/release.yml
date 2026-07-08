@@ -23,19 +23,19 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-qemu-action@v4
 
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v4
 
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: docker/metadata-action@v5
+      - uses: docker/metadata-action@v6
         id: meta
         with:
           images: ghcr.io/${{ github.repository }}
@@ -44,7 +44,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=raw,value=latest
 
-      - uses: docker/build-push-action@v6
+      - uses: docker/build-push-action@v7
         with:
           context: .
           platforms: linux/amd64,linux/arm64
@@ -60,17 +60,25 @@ jobs:
       contents: read
       id-token: write # OIDC exchange for npm Trusted Publishing + provenance
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
 
-      # Trusted Publishing needs npm ≥ 11.5.1 (Node 22 bundles npm 10).
+      # Trusted Publishing needs npm ≥ 11.5.1 — pin to latest to be safe.
       - run: npm install -g npm@latest
 
       # Both packages are dependency-free; their tests need no install.
       - run: node packages/cli/test.mjs && node packages/mcp-stdio/test.mjs
+
+      # The tag is the single source of truth for the release version —
+      # package.json versions don't need manual bumps.
+      - name: Set package versions from tag
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          (cd packages/cli && npm version "$VERSION" --no-git-tag-version)
+          (cd packages/mcp-stdio && npm version "$VERSION" --no-git-tag-version)
 
       - name: Publish @ctxai/cli
         working-directory: packages/cli
