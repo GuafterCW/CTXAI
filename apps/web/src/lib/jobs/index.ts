@@ -65,7 +65,15 @@ export async function createGenerationJob(
   userId: string,
   params: { provider: string; modelId: string; input: Record<string, unknown> },
 ) {
-  const { provider, model } = findModel(params.provider, params.modelId);
+  let resolved: ReturnType<typeof findModel>;
+  try {
+    resolved = findModel(params.provider, params.modelId);
+  } catch (err) {
+    // Unknown provider/model is caller input, not a server fault (e.g. a
+    // non-demo provider requested against a DEMO_MODE instance).
+    throw new JobInputError(err instanceof Error ? err.message : "Unknown model");
+  }
+  const { provider, model } = resolved;
 
   const parsed = model.inputSchema.safeParse(params.input);
   if (!parsed.success) {

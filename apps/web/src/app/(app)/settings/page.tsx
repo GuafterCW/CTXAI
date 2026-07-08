@@ -1,4 +1,5 @@
 import { requireSession } from "@/lib/session";
+import { isDemoMode } from "@/lib/demo";
 import { credentialStatus } from "@/lib/credentials";
 import { listApiKeys } from "@/lib/api-keys";
 import { listProviders } from "@/lib/providers/registry";
@@ -35,11 +36,25 @@ export default async function SettingsPage() {
 
       <section className="mt-8">
         <h2 className="mb-4 font-display text-lg font-medium">Provider keys</h2>
-        <div className="space-y-4">
-          {providers.map((provider) => (
-            <ProviderKeyCard key={provider.id} provider={provider} />
-          ))}
-        </div>
+        {isDemoMode() ? (
+          <p className="rounded-xl border border-line bg-surface p-4 text-sm text-ink-dim">
+            This is a public demo — storing provider keys is disabled and only
+            the built-in demo provider is available.{" "}
+            <a
+              href="https://github.com/GuafterCW/CTXAI"
+              className="text-accent-bright underline underline-offset-2"
+            >
+              Self-host CTXAI
+            </a>{" "}
+            to plug in your own Kling, Seedream and ElevenLabs keys.
+          </p>
+        ) : (
+          <div className="space-y-4">
+            {providers.map((provider) => (
+              <ProviderKeyCard key={provider.id} provider={provider} />
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="mt-10" id="api-keys">

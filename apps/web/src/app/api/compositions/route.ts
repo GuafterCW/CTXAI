@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { handling, requireApiUser } from "@/lib/api";
+import { demoRateLimit } from "@/lib/demo";
 import {
   composeAndRender,
   listCompositions,
@@ -17,6 +18,10 @@ const postSchema = z.object({
 export async function POST(req: NextRequest) {
   return handling(async () => {
     const user = await requireApiUser();
+    const limited = demoRateLimit(user.id, "compose");
+    if (limited) {
+      return NextResponse.json({ error: limited }, { status: 429 });
+    }
     const body = postSchema.parse(await req.json());
     try {
       const result = await composeAndRender(user.id, {

@@ -60,7 +60,9 @@ export default async function LandingPage() {
             Start creating
           </Link>
           <a
-            href="https://github.com"
+            href="https://github.com/GuafterCW/CTXAI"
+            target="_blank"
+            rel="noreferrer"
             className="rounded-xl border border-line-bright px-7 py-3.5 font-medium text-ink transition-colors hover:border-accent/60 hover:bg-overlay"
           >
             View on GitHub

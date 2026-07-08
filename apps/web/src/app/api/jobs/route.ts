@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { handling, requireApiUser } from "@/lib/api";
+import { demoRateLimit, ensureDemoJanitor } from "@/lib/demo";
 import { createGenerationJob, JobInputError, listJobs } from "@/lib/jobs";
 import { ensurePollerRunning } from "@/lib/jobs/poller";
 import type { JobStatus } from "@/lib/db/schema";
@@ -14,6 +15,11 @@ const createSchema = z.object({
 export async function POST(req: NextRequest) {
   return handling(async () => {
     const user = await requireApiUser();
+    ensureDemoJanitor();
+    const limited = demoRateLimit(user.id, "job");
+    if (limited) {
+      return NextResponse.json({ error: limited }, { status: 429 });
+    }
     const body = createSchema.parse(await req.json());
 
     try {

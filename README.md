@@ -8,6 +8,9 @@ instance — and a **montage pipeline** that turns generations into
 publish-ready YouTube Shorts, Reels or long-form videos with narration,
 word-level captions and music.
 
+**[🚀 Live demo → ai.ctx.ink](https://ai.ctx.ink)** — try the full studio with
+the built-in demo provider (no keys needed; accounts are wiped daily).
+
 > Working title "CTXAI"
 
 ## Features
@@ -63,6 +66,14 @@ pnpm install
 cp .env.example apps/web/.env   # fill BETTER_AUTH_SECRET + ENCRYPTION_KEY
 pnpm dev                        # http://localhost:3000
 ```
+
+### Hosting a public demo
+
+Set `DEMO_MODE=1` to run a safe showcase instance: only the keyless demo
+provider is available (nobody can store real API keys on your server),
+generation and montage endpoints are rate-limited per user, auth endpoints
+are throttled, and accounts plus their data are wiped after
+`DEMO_RETENTION_HOURS` (default 24). A banner tells visitors it's a demo.
 
 ## Getting provider keys
 

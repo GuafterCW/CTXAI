@@ -10,11 +10,19 @@ function register(provider: Provider) {
   providers.set(provider.id, provider);
 }
 
-register(klingProvider);
-register(seedreamProvider);
-register(elevenLabsProvider);
+// Demo mode (see lib/demo.ts): only the keyless demo provider is registered,
+// so a public showcase instance can never store visitors' real API keys.
+// Everything downstream (settings UI, job creation, MCP tools) follows this.
+const demoMode =
+  process.env.DEMO_MODE === "1" || process.env.DEMO_MODE === "true";
+
+if (!demoMode) {
+  register(klingProvider);
+  register(seedreamProvider);
+  register(elevenLabsProvider);
+}
 // The mock provider needs no keys — useful for demos, UI work and tests.
-if (process.env.ENABLE_MOCK_PROVIDER !== "false") {
+if (demoMode || process.env.ENABLE_MOCK_PROVIDER !== "false") {
   register(mockProvider);
 }
 
