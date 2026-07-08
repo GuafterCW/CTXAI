@@ -1,0 +1,146 @@
+@import "tailwindcss";
+
+@theme {
+  /* Cinematic dark palette */
+  --color-void: #07070b;
+  --color-surface: #0d0d14;
+  --color-raised: #14141f;
+  --color-overlay: #1b1b2a;
+  --color-line: #23233a;
+  --color-line-bright: #33334f;
+
+  --color-ink: #f2f2f8;
+  --color-ink-dim: #9d9db3;
+  --color-ink-faint: #62627a;
+
+  /* Accent gradient: violet -> blue */
+  --color-accent: #8b5cf6;
+  --color-accent-bright: #a78bfa;
+  --color-accent-blue: #3b82f6;
+  --color-accent-cyan: #22d3ee;
+
+  --color-success: #34d399;
+  --color-danger: #f87171;
+  --color-warning: #fbbf24;
+
+  --font-display: var(--font-space-grotesk), system-ui, sans-serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+
+  --radius-card: 1rem;
+
+  --animate-shimmer: shimmer 2.2s linear infinite;
+  --animate-breathe: breathe 3.2s ease-in-out infinite;
+  --animate-border-spin: border-spin 4s linear infinite;
+
+  @keyframes shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+
+  @keyframes breathe {
+    0%,
+    100% {
+      opacity: 0.55;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.015);
+    }
+  }
+
+  @keyframes border-spin {
+    to {
+      --border-angle: 360deg;
+    }
+  }
+}
+
+@property --border-angle {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--color-void);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-accent) 40%, transparent);
+}
+
+/* Subtle scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-bright) transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Glass card utility */
+@utility glass {
+  background: color-mix(in srgb, var(--color-raised) 78%, transparent);
+  backdrop-filter: blur(18px);
+  border: 1px solid color-mix(in srgb, var(--color-line) 90%, transparent);
+}
+
+/* Animated gradient border for generating cards */
+@utility gradient-border-spin {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--color-surface), var(--color-surface)) padding-box,
+    conic-gradient(
+        from var(--border-angle),
+        var(--color-accent),
+        var(--color-accent-blue),
+        var(--color-accent-cyan),
+        var(--color-accent)
+      )
+      border-box;
+  animation: border-spin 4s linear infinite;
+}
+
+/* Shimmer placeholder */
+@utility shimmer-surface {
+  background: linear-gradient(
+    100deg,
+    var(--color-raised) 40%,
+    var(--color-overlay) 50%,
+    var(--color-raised) 60%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2.2s linear infinite;
+}
+
+/* Accent gradient text */
+@utility text-gradient {
+  background: linear-gradient(
+    90deg,
+    var(--color-accent-bright),
+    var(--color-accent-blue) 60%,
+    var(--color-accent-cyan)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
