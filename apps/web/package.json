@@ -22,14 +22,14 @@
     "motion": "^12.23.0",
     "nanoid": "^5.1.0",
     "next": "^15.4.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
     "zod": "^3.25.0",
     "zod-to-json-schema": "^3.25.2"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.5",
-    "@tailwindcss/postcss": "^4.1.0",
+    "@eslint/eslintrc": "^3.3.6",
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^24.0.0",
     "@types/react": "^19.1.0",
@@ -37,8 +37,8 @@
     "drizzle-kit": "^0.31.0",
     "eslint": "^9.30.0",
     "eslint-config-next": "^15.4.0",
-    "postcss": "^8.5.0",
-    "tailwindcss": "^4.1.0",
+    "postcss": "^8.5.21",
+    "tailwindcss": "^4.3.3",
     "typescript": "^5.8.0",
     "vitest": "^4.1.10"
   }
