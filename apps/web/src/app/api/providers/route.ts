@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { zodToJsonSchema } from "zod-to-json-schema";
+import { toJsonSchema } from "@/lib/json-schema";
 import { handling, requireApiUser } from "@/lib/api";
 import { credentialStatus } from "@/lib/credentials";
 import { listProviders } from "@/lib/providers/registry";
@@ -25,7 +25,7 @@ export async function GET() {
             kind: m.kind,
             description: m.description,
             costHint: m.costHint,
-            paramsSchema: zodToJsonSchema(m.inputSchema),
+            paramsSchema: toJsonSchema(m.inputSchema),
           })),
           configured: p.credentialFields.length === 0 || Boolean(row),
           config: row?.config ?? {},

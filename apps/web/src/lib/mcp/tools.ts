@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema";
+import { toJsonSchema } from "@/lib/json-schema";
 import { createGenerationJob, getJob, JobInputError, listJobs } from "@/lib/jobs";
 import { ensurePollerRunning } from "@/lib/jobs/poller";
 import { listModelsForUser } from "@/lib/models";
@@ -96,7 +96,7 @@ async function startGeneration(
 }
 
 const schema = (shape: z.ZodRawShape) =>
-  zodToJsonSchema(z.object(shape)) as Record<string, unknown>;
+  toJsonSchema(z.object(shape));
 
 /* ---------------------------------- tools --------------------------------- */
 

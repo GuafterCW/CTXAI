@@ -1,4 +1,4 @@
-import { zodToJsonSchema } from "zod-to-json-schema";
+import { toJsonSchema } from "@/lib/json-schema";
 import { credentialStatus } from "@/lib/credentials";
 import { listProviders } from "@/lib/providers/registry";
 import type { JsonSchema, ModelDto } from "@/lib/client-types";
@@ -15,7 +15,7 @@ export async function listModelsForUser(userId: string): Promise<ModelDto[]> {
       kind: model.kind,
       description: model.description,
       costHint: model.costHint,
-      paramsSchema: zodToJsonSchema(model.inputSchema) as JsonSchema,
+      paramsSchema: toJsonSchema(model.inputSchema) as JsonSchema,
       configured:
         provider.credentialFields.length === 0 || status.has(provider.id),
     })),
